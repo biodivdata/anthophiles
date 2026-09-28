@@ -52,16 +52,34 @@
 	 		
 	
 			<div class="mobile-nav">
-				<span class="mobile-nav__bee" v-if="filter.bee">
-					<FilterChip facet="bee" :value="filter.bee" :closable="!!filter.plant" @close="unsetFilter('bee')"/>
+				<span class="mobile-nav__bee mobile-nav__slot">
+					<FilterChip v-if="filter.bee" facet="bee" :value="filter.bee" :closable="!!filter.plant" @close="unsetFilter('bee')"/>
 				</span>
-				<span class="mobile-nav__plant" v-if="filter.plant">
-					<FilterChip facet="plant" :value="filter.plant" :closable="!!filter.bee" @close="unsetFilter('plant')"/>
+
+				<CarouselPagination
+					class="mobile-nav__pagination"
+					:active-index="carouselIndex"
+					:total="viewItems.length"
+					@prev="carouselIndex--"
+					@next="carouselIndex++"
+				/>
+
+				<span class="mobile-nav__plant mobile-nav__slot">
+					<FilterChip v-if="filter.plant" facet="plant" :value="filter.plant" :closable="!!filter.bee" @close="unsetFilter('plant')"/>
 				</span>
 			</div>
 
 			<div class="carousel-slot">
-			<FocusCarousel v-if="focusItem" :items="viewItems" @set-filter="setFilter"/>
+				<div class="carousel-column">
+					<CarouselPagination
+						class="desktop-pagination"
+						:active-index="carouselIndex"
+						:total="viewItems.length"
+						@prev="carouselIndex--"
+						@next="carouselIndex++"
+					/>
+					<FocusCarousel v-if="focusItem" :items="viewItems" v-model:active-index="carouselIndex" @set-filter="setFilter"/>
+				</div>
 			</div>
 
 			<div class="col plantPanel">
@@ -109,18 +127,20 @@
 	  import FocusCarousel from './components/FocusCarousel.vue'
 	  import FilterChip from './components/FilterChip.vue'
 
+	  import CarouselPagination from './components/CarouselPagination.vue'
 export default {
 
   name: 'App',
 
   components:{ 
-  	FacetList, CirclePack, FocusCarousel, FilterChip
+  	FacetList, CirclePack, FocusCarousel, FilterChip, CarouselPagination
   },
 
   data () {
     return {
     	items:sourceData,
     	filter: {bee:null, plant:null},
+    	carouselIndex:0,
     	minScore:0.4,
     	focusIndex:0
     }
@@ -345,6 +365,24 @@ ul.items{
 
  .carousel-slot { display: contents; }
 
+ .carousel-column{
+ 	display: flex;
+ 	flex-direction: column;
+ 	align-items: stretch;
+ 	flex: 1.25;
+ 	min-width: 320px;
+ 	margin: 0 auto;
+ }
+
+ .desktop-pagination{
+ 	align-self: center;
+ 	margin-bottom: 0.5rem;
+ }
+
+ .mobile-nav__pagination{
+ 	display: none;
+ }
+
  .flex-row{
  	width:100%;
  	margin:0 auto;
@@ -382,10 +420,23 @@ ul.items{
 
  	.pack-bee{ order: 1; }
  	.mobile-nav{ order: 2; }
- 	.carousel-slot{ 
-		order: 3; 
-		display: block;
-	}
+ 	.carousel-slot{
+ 		order: 3;
+ 		display: block;
+ 	}
+
+ 	.desktop-pagination{
+ 		display: none;
+ 	}
+
+ 	.mobile-nav__pagination{
+ 		display: inline-flex;
+ 	}
+
+ 	.carousel-column{
+ 		min-width: 0;
+ 		width: 100%;
+ 	}
  	.pack-plant{ order: 4; }
 
  	/* The detail stats panels are dropped entirely on mobile to save
@@ -406,13 +457,24 @@ ul.items{
  		gap: 0.5rem;
  	}
 
+ 	/* Both side slots always occupy equal space (even when their
+ 	   FilterChip is absent) so the pagination pill in the middle
+ 	   stays visually centered regardless of which filters are set. */
+ 	.mobile-nav__slot{
+ 		flex: 1 1 0;
+ 		min-width: 0;
+ 	}
+
  	.mobile-nav__bee{
  		text-align: left;
  	}
 
  	.mobile-nav__plant{
  		text-align: right;
- 		margin-left: auto;
+ 	}
+
+ 	.mobile-nav__pagination{
+ 		flex: 0 0 auto;
  	}
 
  	.carousel-slot{

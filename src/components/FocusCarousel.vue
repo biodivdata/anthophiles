@@ -19,24 +19,6 @@
 			</div>
 		</div>
 
-		<div class="carousel__nav" v-if="items.length > 1">
-			<button
-				class="carousel__btn prev"
-				aria-label="Previous observation"
-				:disabled="activeIndex === 0"
-				@click="goTo(activeIndex - 1)"
-			>&#8249;</button>
-
-			<span class="carousel__pagination">{{ activeIndex + 1 }} of {{ items.length }}</span>
-
-			<button
-				class="carousel__btn next"
-				aria-label="Next observation"
-				:disabled="activeIndex === items.length - 1"
-				@click="goTo(activeIndex + 1)"
-			>&#8250;</button>
-		</div>
-
 	</div>
 </template>
 
@@ -47,13 +29,22 @@
 	export default {
 
 	  name: 'FocusCarousel',
-	  props: ['items'],
+	  props: {
+	  	items: {
+	  		type: Array,
+	  		default: () => []
+	  	},
+	  	activeIndex: {
+	  		type: Number,
+	  		default: 0
+	  	}
+	  },
 	  components: { ObsCard },
-	  emits: ['set-filter'],
+	  emits: ['set-filter', 'update:activeIndex'],
 
 	  data () {
 	    return {
-	    	activeIndex: 0,
+	    	internalIndex: this.activeIndex,
 	    	slideRefs: [],
 	    	scrollRAF: null
 	    }
@@ -62,13 +53,18 @@
 	  watch: {
 	  	items(){
 	  		this.slideRefs = [];
-	  		this.activeIndex = 0;
+	  		this.internalIndex = 0;
+	  		this.$emit('update:activeIndex', 0);
 	  		this.$nextTick(() => this.scrollToIndex(0, false));
+	  	},
+	  	activeIndex(i){
+	  		if (i === this.internalIndex) return;
+	  		this.scrollToIndex(i, true);
 	  	}
 	  },
 
 	  mounted () {
-	  	this.$nextTick(() => this.scrollToIndex(0, false));
+	  	this.$nextTick(() => this.scrollToIndex(this.activeIndex, false));
 	  },
 
 	  methods: {
@@ -89,7 +85,8 @@
 
 	  		const target = slide.offsetLeft - (viewport.clientWidth - slide.clientWidth) / 2;
 	  		viewport.scrollTo({ left: target, behavior: smooth ? 'smooth' : 'instant' });
-	  		this.activeIndex = i;
+	  		this.internalIndex = i;
+	  		this.$emit('update:activeIndex', i);
 	  	},
 
 	  	onScroll(){
@@ -112,7 +109,10 @@
 	  				}
 	  			});
 
-	  			this.activeIndex = closest;
+	  			if (closest !== this.internalIndex){
+	  				this.internalIndex = closest;
+	  				this.$emit('update:activeIndex', closest);
+	  			}
 	  		});
 	  	},
 
@@ -125,8 +125,7 @@
 	.carousel{
 		position:relative;
 		margin: 0 auto;
-		flex: 1.25;
-    	min-width: 320px;
+		width: 100%;
 	}
 
 	.carousel__viewport{
@@ -194,38 +193,6 @@
 	.carousel__spacer{
 		flex: 0 0 8%;
 		max-width: 8%;
-	}
-
-	.carousel__nav{
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: center;
-		gap: 1rem;
-		margin-top: 0.5rem;
-	}
-
-	.carousel__btn{
-		background: none;
-		border: none;
-		font-size: 1.5rem;
-		line-height: 1;
-		cursor: pointer;
-		color: #444;
-		padding: 0.25rem 0.5rem;
-	}
-
-	.carousel__btn:disabled{
-		opacity: 0.3;
-		cursor: default;
-	}
-
-	.carousel__pagination{
-		font-size: 80%;
-		font-weight: 300;
-		color: #444;
-		min-width: 5rem;
-		text-align: center;
 	}
 
 	@media (max-width: 768px){

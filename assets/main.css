@@ -17,6 +17,10 @@ a, a:visited, a:active{
 
 @media (max-width: 768px){
 
+	html{
+		font-size:14px;
+	}
+	
 	body{
 		margin:0;
 	}
