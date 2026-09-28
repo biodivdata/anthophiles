@@ -2,9 +2,8 @@
 	<span class="filterChip"
 		:class="[facet, { inline: inline }]"
 		@click="onClick">
-	{{ value }}
-		<button
-			v-if="closable"
+	{{value}}
+		<button v-if="closable"
 			class="close-unicode"
 			aria-label="Close"
 			@click.stop="$emit('close')"
@@ -51,7 +50,7 @@
 		color:white;
 		font-style: italic;
 		font-weight:400;
-		padding:0.25rem 0.5rem 0.25rem 0.5rem;
+		padding:0.4rem 0.5rem 0.4rem 0.6rem;
 		clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
 		display: inline-block;
 
@@ -64,7 +63,8 @@
 		font-weight:500;
 		margin:0;
 		padding:0.05em 0.4em;
-		background-color: #ddd;
+		background-color: #919191;
+		color:white;
 		position:absolute;
 		bottom:-1.0em;
 		right:-0.25em;
@@ -81,19 +81,20 @@
 	}
 
 	.filterChip.inline{
-		padding:0.1rem 0.2rem 0.1rem 0.4rem;
-		color:black;
-		font-weight:400;
-		cursor:pointer;
-		display: inline;
+		padding: 0rem 0.5rem 0rem 0.4rem;
+		color: black;
+		font-weight: 400;
+		cursor: pointer;
+		display: inline-block;
+		line-height: 1.6em;
 	}
 
 	.filterChip.bee.inline{
-		background-color: color-mix(in srgb, var(--color-bee) 27%, transparent);
+		background-color: color-mix(in srgb, var(--color-bee) 40%, transparent);
 	}
 
 	.filterChip.plant.inline{
-		background-color: color-mix(in srgb, var(--color-plant) 27%, transparent);
+		background-color: color-mix(in srgb, var(--color-plant) 40%, transparent);
 	}
 
 	.filterChip.bee.inline:hover{

@@ -1,14 +1,24 @@
 :root{
-	--color-bee: #a16b37;
-	--color-plant: #879D5C;
+	--color-bee: #a65f1d;
+	/* --color-bee: #a16b37; */
+	--color-plant: #778e4e;
+	/* --color-plant: #879D5C; */
 }
 
 body{
 	font-family: 'Noto Sans', sans-serif;
-	margin:2rem;
+	margin:1rem;
 	background-color: rgb(244,244,241);
 }
 
 a, a:visited, a:active{
 	color: var(--color-bee);
 }
+
+@media (max-width: 768px){
+
+	body{
+		margin:0;
+	}
+}
+

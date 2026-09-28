@@ -8,9 +8,11 @@
 
 <template>
 
+<div class="page">
+
 <div class="facets">
-	<CirclePack :list-data="beeGenera" facet="bee" facet-title="Bees" :filter-state="filter" @set-filter="setFilter"></CirclePack>
-	<CirclePack :list-data="plantGenera" facet="plant" facet-title="Plants" :filter-state="filter" @set-filter="setFilter"></CirclePack>
+	<CirclePack class="pack-bee" :list-data="beeGenera" facet="bee" facet-title="Bees" :filter-state="filter" @set-filter="setFilter"></CirclePack>
+	<CirclePack class="pack-plant" :list-data="plantGenera" facet="plant" facet-title="Plants" :filter-state="filter" @set-filter="setFilter"></CirclePack>
 </div>
 
 
@@ -20,19 +22,18 @@
 
 	 		<div class="col beePanel">
 	 			<div class="inner" v-if="filter.bee">
-		 			<p>
+		 			<p class="chip-label">
 		 				<FilterChip facet="bee" :value="filter.bee" :closable="!!filter.plant" @close="unsetFilter('bee')"/>
 		 			</p>
 
-
+		 			<div class="detail">
 		 			<p><span v-if="beeStats.native">A native</span> 
 		 				 <span v-if="!beeStats.native">An introduced</span>
 		 			bee genus</p>
 
-		 			<p>Most connected with 
+		 			<p class="tall-lines">Most connected with 
 			 			<span v-for="(p,i) in beeStats.topPlants">
 			 				<FilterChip facet="plant" :value="p.plant" inline @select="setFilter('plant',p.plant)"/>
-			 				<span v-if="i<1 && beeStats.topPlants.length > 2">, </span>
 			 				<span v-if="i==1"> and </span>
 			 			</span> plants
 			 		</p>
@@ -45,49 +46,61 @@
 			 			</p>
 
 		 		</div>
+		 		</div>
 
 	 		</div>
 	 		
 	
-				<FocusCarousel v-if="focusItem" :items="viewItems" @set-filter="setFilter"/>
+			<div class="mobile-nav">
+				<span class="mobile-nav__bee" v-if="filter.bee">
+					<FilterChip facet="bee" :value="filter.bee" :closable="!!filter.plant" @close="unsetFilter('bee')"/>
+				</span>
+				<span class="mobile-nav__plant" v-if="filter.plant">
+					<FilterChip facet="plant" :value="filter.plant" :closable="!!filter.bee" @close="unsetFilter('plant')"/>
+				</span>
+			</div>
 
-				<div class="col plantPanel">
-					<div class="inner" v-if="filter.plant">
-			 			<p>
-			 				<FilterChip facet="plant" :value="filter.plant" :closable="!!filter.bee" @close="unsetFilter('plant')"/>
-			 			</p>
+			<div class="carousel-slot">
+			<FocusCarousel v-if="focusItem" :items="viewItems" @set-filter="setFilter"/>
+			</div>
 
-			 			<p>
-			 				<span v-if="plantStats.native > 0.8">A native</span>
-			 				<span v-if="plantStats.native < 0.2">An introduced</span>
-			 				<span v-if="plantStats.native > 0.2 && plantStats.native < 0.8">A mixed</span>
-			 				plant genus</p>
+			<div class="col plantPanel">
+				<div class="inner" v-if="filter.plant">
+					<p class="chip-label">
+						<FilterChip facet="plant" :value="filter.plant" :closable="!!filter.bee" @close="unsetFilter('plant')"/>
+					</p>
 
-			 			<p>Most connected with 
-			 				<span v-for="(b,i) in plantStats.topBees">
-			 					<FilterChip facet="bee" :value="b.bee" inline @select="setFilter('bee',b.bee)"/>
-			 					<span v-if="i<1 && plantStats.topBees.length > 2">, </span>
-			 					<span v-if="i == plantStats.topBees.length - 2"> and </span>
-			 				</span> bees
-			 			</p>
+					<div class="detail">
+					<p>
+						<span v-if="plantStats.native > 0.8">A native</span>
+						<span v-if="plantStats.native < 0.2">An introduced</span>
+						<span v-if="plantStats.native > 0.2 && plantStats.native < 0.8">A mixed</span>
+						plant genus</p>
 
-			 			
+					<p class="tall-lines">Most connected with 
+						<span v-for="(b,i) in plantStats.topBees">
+							<FilterChip facet="bee" :value="b.bee" inline @select="setFilter('bee',b.bee)"/>
 
-			 			<p>Connected with a 
-			 				<span v-if="plantStats.beeBreadth <= 0.1">narrow</span>
-			 				<span v-if="plantStats.beeBreadth >= 0.3">broad</span>
-			 				<span v-if="plantStats.beeBreadth < 0.3 && plantStats.beeBreadth > 0.1">moderate</span> range of bee genera ({{plantStats.beeBreadth.toLocaleString('en-US', { style: 'percent' })}})
+							<span v-if="i == plantStats.topBees.length - 2"> and </span>
+						</span> bees
+					</p>
 
-			 			</p>
+					<p>Connected with a 
+						<span v-if="plantStats.beeBreadth <= 0.1">narrow</span>
+						<span v-if="plantStats.beeBreadth >= 0.3">broad</span>
+						<span v-if="plantStats.beeBreadth < 0.3 && plantStats.beeBreadth > 0.1">moderate</span> range of bee genera ({{plantStats.beeBreadth.toLocaleString('en-US', { style: 'percent' })}})
+					</p>
+					</div>
 
-		 		 </div>
-		 		</div>
+				</div>
+			</div>
 
 	 	</div>
 
 	 	
 
-	 
+</div>
+
 </template>
 
 <script>
@@ -325,10 +338,12 @@ ul.items{
  }
 
 .facets{
-display: flex;
-flex-direction: row;
-justify-content: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
  }
+
+ .carousel-slot { display: contents; }
 
  .flex-row{
  	width:100%;
@@ -341,15 +356,72 @@ justify-content: center;
  	align-items: flex-start;
  }
 
+ .mobile-nav{
+ 	display: none;
+ }
+
  @media (max-width: 768px){
- 	.flex-row{
+
+ 	/* Stack the whole page as a single column:
+ 	   bee circle-pack -> mobile-nav (bee/plant chips) -> carousel -> plant circle-pack.
+ 	   .page becomes the shared flex context so the carousel
+ 	   (normally rendered inside .flex-row) can be reordered to
+ 	   sit between the two CirclePack panels via flex order. */
+ 	.page{
+ 		display: flex;
  		flex-direction: column;
- 		flex-wrap: wrap;
  	}
 
+ 	.facets{
+ 		display: contents;
+ 	}
+
+ 	.flex-row{
+ 		display: contents;
+ 	}
+
+ 	.pack-bee{ order: 1; }
+ 	.mobile-nav{ order: 2; }
+ 	.carousel-slot{ 
+		order: 3; 
+		display: block;
+	}
+ 	.pack-plant{ order: 4; }
+
+ 	/* The detail stats panels are dropped entirely on mobile to save
+ 	   vertical space; only a compact mobile-nav strip (below) shows
+ 	   the currently focused bee/plant chips. */
  	.col.beePanel, .col.plantPanel{
+ 		display: none;
+ 	}
+
+ 	.mobile-nav{
+ 		display: flex;
+ 		flex-direction: row;
+ 		justify-content: space-between;
+ 		align-items: center;
+ 		width: 100%;
+ 		padding: 0.5rem 1rem;
+ 		box-sizing: border-box;
+ 		gap: 0.5rem;
+ 	}
+
+ 	.mobile-nav__bee{
  		text-align: left;
- 		width:100%;
+ 	}
+
+ 	.mobile-nav__plant{
+ 		text-align: right;
+ 		margin-left: auto;
+ 	}
+
+ 	.carousel-slot{
+ 		width: 100%;
+ 		position: sticky;
+ 		top: 0;
+ 		z-index: 5;
+ 		background-color: rgb(244,244,241);
+ 		padding: 0.5rem 0;
  	}
  }
 
@@ -361,7 +433,15 @@ justify-content: center;
  }
 
  .col p{
- 	line-height: 1.6rem;
+ 	line-height: 1.2rem;
+ }
+
+ .col p.tall-lines{
+	line-height: 1.8rem;
+ }
+
+ .col p.chip-label{
+	font-size:110%;
  }
 
  .col.beePanel{
@@ -369,15 +449,9 @@ justify-content: center;
  }
 
  .col.beePanel, .col.plantPanel{
- 	padding:1rem 1.5rem;
-	flex:0.8;
+	margin:0 1rem;
  }
-
-
-/*
-  .col .inner{
-  	max-width:320px;
-  }*/
+ 
 
 .morebutton{
 	width:100%;

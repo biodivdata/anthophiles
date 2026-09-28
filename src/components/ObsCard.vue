@@ -6,17 +6,19 @@
 
 		<div class="taxa">
 			<span class="beeChip">
-				<FilterChip facet="bee" :value="obs.genus"  @select="$emit('set-filter', 'bee', obs.genus)"/>
+				<FilterChip facet="bee" inline :value="obs.genus"  @select="$emit('set-filter', 'bee', obs.genus)"/>
 				<span class="lastname" :if="lastNamePart">{{lastNamePart}}</span>
 			</span>
 			
 
 			<span class="plantChip">
-				<FilterChip facet="plant" :score="(obs.plantDetections[0].score).toFixed(2)" :value="obs.plantDetections[0].genus"  @select="$emit('set-filter', 'plant', obs.plantDetections[0].genus)"/>
+				<FilterChip facet="plant" inline :score="(obs.plantDetections[0].score).toFixed(2)" :value="obs.plantDetections[0].genus"  @select="$emit('set-filter', 'plant', obs.plantDetections[0].genus)"/>
 			</span>
 		</div>
 		
-		<p>Observed <span v-if="obs.identifiedBy">by {{observerName}}</span> <span v-if="obs.eventDate"> on {{obsDate}}</span>
+		<p>Observed <span v-if="obs.identifiedBy">by {{observerName}}</span>
+			<span v-if="obs.eventDate && obs.identifiedBy">, </span>
+			<span v-if="obs.eventDate">{{obsDate}}</span>
 		</p>
 
 		<p>Data source: {{obs.dataResourceName}}; Full record:  <a v-if="obs.occurrenceID" :href="'https://biocache.ala.org.au/occurrences/'+obs.occurrenceID" target="_blank">ALA</a></p>
@@ -50,7 +52,7 @@
 			} else {
 				return null;
 			}
-			if (!lastpart.charAt(0) === '(') return lastpart;
+			if (lastpart.charAt(0) != '(') return lastpart;
 			return null;
 		},
 
@@ -58,7 +60,7 @@
 			let d = new Date(this.obs.eventDate)
 			const formattedDate = d.toLocaleDateString('en-GB', {
 				day: 'numeric',
-				month: 'long',
+				month: 'numeric',
 				year: 'numeric'
 			});
 			return formattedDate;
@@ -112,8 +114,9 @@
 	.taxa{
 		position:relative;
 		height:1.5rem;
-		margin-bottom:1.0rem;
+		margin: 0 0.25rem 1.0rem;
 		font-size: 90%;
+		
 
 	}
 

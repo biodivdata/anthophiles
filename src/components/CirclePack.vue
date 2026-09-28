@@ -251,6 +251,25 @@ export default {
   user-select: none;
 }
 
+@media (max-width: 768px){
+  .circle-pack-wrap{
+    display: block;
+    margin: 0 auto;
+  }
+
+  .svg-container{
+    width: 100%;
+    height: auto;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .bubble-chart{
+    width: 100%;
+    height: auto;
+  }
+}
+
 .bubble-node {
   cursor: pointer;
 }
@@ -265,7 +284,7 @@ export default {
 
 .bubble-node.root-node {
   cursor: default;
-  fill:none;
+  fill:rgba(255, 255, 255, 0.5);
 }
 
 
@@ -290,13 +309,16 @@ export default {
 .bubble-node.facet-bee.focused .bubble-circle {
   stroke: #444;
   stroke-width: 2.5px;
-  fill: var(--color-bee);
+  /* fill: var(--color-bee); */
+  fill: color-mix(in srgb, var(--color-bee) 80%, transparent);
+
 }
 
 .bubble-node.facet-plant.focused .bubble-circle {
   stroke: #444;
   stroke-width: 2.5px;
-  fill: var(--color-plant);
+  /* fill: var(--color-plant); */
+  fill: color-mix(in srgb, var(--color-plant) 80%, transparent);
 }
 
 
