@@ -9,11 +9,13 @@
 <template>
 
 <div class="page">
+	<h1 class="main-title">Anthophiles</h1>
 
-<div class="facets">
-	<CirclePack class="pack-bee" :list-data="beeGenera" facet="bee" facet-title="Bees" :filter-state="filter" @set-filter="setFilter"></CirclePack>
-	<CirclePack class="pack-plant" :list-data="plantGenera" facet="plant" facet-title="Plants" :filter-state="filter" @set-filter="setFilter"></CirclePack>
-</div>
+
+	<div class="facets">
+		<CirclePack class="pack-bee" :list-data="beeGenera" facet="bee" facet-title="Bees" :filter-state="filter" @set-filter="setFilter"></CirclePack>
+		<CirclePack class="pack-plant" :list-data="plantGenera" facet="plant" facet-title="Plants" :filter-state="filter" @set-filter="setFilter"></CirclePack>
+	</div>
 
 
 	<!-- <h4>{{focusIndex+1}} of {{viewItems.length}}  <span @click="nextItem">></span></h4>  -->
@@ -58,10 +60,10 @@
 
 				<CarouselPagination
 					class="mobile-nav__pagination"
-					:active-index="carouselIndex"
+					:active-index="focusIndex"
 					:total="viewItems.length"
-					@prev="carouselIndex--"
-					@next="carouselIndex++"
+					@prev="setFocusIndex(focusIndex - 1)"
+					@next="setFocusIndex(focusIndex + 1)"
 				/>
 
 				<span class="mobile-nav__plant mobile-nav__slot">
@@ -73,12 +75,12 @@
 				<div class="carousel-column">
 					<CarouselPagination
 						class="desktop-pagination"
-						:active-index="carouselIndex"
+						:active-index="focusIndex"
 						:total="viewItems.length"
-						@prev="carouselIndex--"
-						@next="carouselIndex++"
+						@prev="setFocusIndex(focusIndex - 1)"
+						@next="setFocusIndex(focusIndex + 1)"
 					/>
-					<FocusCarousel v-if="focusItem" :items="viewItems" v-model:active-index="carouselIndex" @set-filter="setFilter"/>
+					<FocusCarousel v-if="focusItem" :items="viewItems" :active-index="focusIndex" @update:active-index="setFocusIndex" @set-filter="setFilter"/>
 				</div>
 			</div>
 
@@ -128,6 +130,8 @@
 	  import FilterChip from './components/FilterChip.vue'
 
 	  import CarouselPagination from './components/CarouselPagination.vue'
+	  import { parseURLState, pushURLState, debouncedReplaceURLState } from './urlState.js'
+
 export default {
 
   name: 'App',
@@ -140,16 +144,40 @@ export default {
     return {
     	items:sourceData,
     	filter: {bee:null, plant:null},
-    	carouselIndex:0,
     	minScore:0.4,
-    	focusIndex:0
+    	// Focus is tracked by the observation's stable occurrenceID rather
+    	// than an array index, since indices shift whenever filters/sort
+    	// change - an occurrenceID is what makes deep-linking to a specific
+    	// observation reliable.
+    	focusedOccurrenceID: null,
+    	// Set once the URL has been parsed on mount, so watchers know
+    	// whether to push a new history entry or just replace in place.
+    	urlStateReady: false
     }
   },
 
   mounted(){
-  	let r = this.pickConnection()
-		this.setBeeFilter(r.genus)
-		this.setPlantFilter(r.plantDetections[0].genus)
+  	this._replaceURLState = debouncedReplaceURLState();
+
+  	if (!this.applyStateFromURL()) {
+  		let r = this.pickConnection()
+  		this.filter.bee = r.genus;
+  		this.filter.plant = r.plantDetections[0].genus;
+  		this.focusedOccurrenceID = r.occurrenceID;
+  	}
+
+  	this.urlStateReady = true;
+  	// Write the resolved initial state (random pick or URL-derived) back
+  	// to the URL, replacing rather than pushing since this is the page's
+  	// starting point, not a user-driven navigation.
+  	this.syncURLState(false);
+
+  	window.addEventListener('popstate', this.onPopState);
+	},
+
+	beforeUnmount(){
+		window.removeEventListener('popstate', this.onPopState);
+		if (this._replaceURLState) this._replaceURLState.cancel();
 	},
 
   computed:{
@@ -162,6 +190,16 @@ export default {
   		let sourceItems = this.items.filter(i => i.genus != "" && i.hasPlant && i.plantDetection.score > this.minScore)
   		console.log(sourceItems.length + " items over " + this.minScore)
   		return sourceItems;
+  	},
+
+  	// Derived from focusedOccurrenceID rather than stored directly, so it
+  	// always reflects a valid position within the current (possibly
+  	// filtered) viewItems list. Falls back to 0 if the focused item is not
+  	// present in the current view (e.g. filters changed).
+  	focusIndex(){
+  		if (!this.focusedOccurrenceID) return 0;
+  		const i = this.viewItems.findIndex(item => item.occurrenceID === this.focusedOccurrenceID);
+  		return i === -1 ? 0 : i;
   	},
 
   	focusItem(){
@@ -258,21 +296,25 @@ export default {
   	setBeeFilter(beeGenus){
   		if (this.filter.bee == beeGenus) {
   			this.filter.bee = ""
+  			this.resetFocusToFirstViewItem();
+  			this.syncURLState(true);
   			return;
   		}
   		this.filter.bee = beeGenus;
-  		//this.pickConnection()
-  		this.focusIndex = 0;
+  		this.resetFocusToFirstViewItem();
+  		this.syncURLState(true);
   	},
 
   	setPlantFilter(plantGenus){
   		if (this.filter.plant == plantGenus) {
   			this.filter.plant = ""
+  			this.resetFocusToFirstViewItem();
+  			this.syncURLState(true);
   			return;
   		}
   		this.filter.plant = plantGenus;
-  		//this.pickConnection()
-  		this.focusIndex = 0;
+  		this.resetFocusToFirstViewItem();
+  		this.syncURLState(true);
   	},
 
   	setFilter(facet,value){
@@ -283,15 +325,99 @@ export default {
 
   	unsetFilter(field){
   		this.filter[field] = "";
+  		this.resetFocusToFirstViewItem();
+  		this.syncURLState(true);
+  	},
+
+  	resetFocusToFirstViewItem(){
+  		const first = this.viewItems[0];
+  		this.focusedOccurrenceID = first ? first.occurrenceID : null;
   	},
 
   	pickConnection(){
   			return this.viewItems[Math.floor(Math.random() * this.viewItems.length)];
   	},
 
+  	// Move focus to a given index within the current viewItems list,
+  	// wrapping is intentionally NOT applied here (pagination buttons are
+  	// disabled at the ends) - clamps defensively instead.
+  	setFocusIndex(i){
+  		if (i < 0 || i > this.viewItems.length - 1) return;
+  		const item = this.viewItems[i];
+  		if (!item) return;
+  		this.focusedOccurrenceID = item.occurrenceID;
+  		// Frequent, low-significance navigation - replace in place rather
+  		// than pushing a new history entry per swipe/click.
+  		this.syncURLState(false);
+  	},
+
   	nextItem(){
-  		this.focusIndex++;
-  		if (this.focusIndex > this.viewItems.length-1) this.focusIndex = 0;
+  		this.setFocusIndex(this.focusIndex + 1 > this.viewItems.length - 1 ? 0 : this.focusIndex + 1);
+  	},
+
+  	/**
+  	 * Read bee/plant/obs from the current URL and, if the referenced
+  	 * state actually exists in the dataset, apply it. Returns true when
+  	 * URL state was applied, false when there was nothing usable (caller
+  	 * should fall back to the default random pick).
+  	 */
+  	applyStateFromURL(){
+  		const { bee, plant, obs } = parseURLState();
+
+  		let obsItem = null;
+  		if (obs) {
+  			obsItem = this.matches.find(item => item.occurrenceID === obs) || null;
+  		}
+
+  		// An observation link is the most specific case: derive bee/plant
+  		// from it directly so a single ?obs=<id> link is enough on its own.
+  		if (obsItem) {
+  			this.filter.bee = obsItem.genus;
+  			this.filter.plant = obsItem.plantDetections[0].genus;
+  			this.focusedOccurrenceID = obsItem.occurrenceID;
+  			return true;
+  		}
+
+  		const beeValid = bee && this.beeGenera.some(g => g.genus === bee);
+  		const plantValid = plant && this.plantGenera.some(g => g.genus === plant);
+
+  		if (!beeValid && !plantValid) return false;
+
+  		if (beeValid) this.filter.bee = bee;
+  		if (plantValid) this.filter.plant = plant;
+
+  		this.resetFocusToFirstViewItem();
+  		return true;
+  	},
+
+  	/**
+  	 * Keep the URL in sync with current filter/focus state.
+  	 * @param {boolean} isCheckpoint - true for meaningful filter changes
+  	 *   (pushState, worth a back-button stop); false for frequent
+  	 *   focus/carousel navigation (debounced replaceState).
+  	 */
+  	syncURLState(isCheckpoint){
+  		// Ignore state changes made while still setting up the initial
+  		// state on mount (random pick or URL-derived) - the URL is written
+  		// once, deliberately, right after mount finishes instead.
+  		if (!this.urlStateReady) return;
+
+  		const state = {
+  			bee: this.filter.bee || '',
+  			plant: this.filter.plant || '',
+  			obs: this.focusedOccurrenceID || ''
+  		};
+
+  		if (isCheckpoint) {
+  			if (this._replaceURLState) this._replaceURLState.cancel();
+  			pushURLState(state);
+  		} else {
+  			this._replaceURLState(state);
+  		}
+  	},
+
+  	onPopState(){
+  		this.applyStateFromURL();
   	}
   }
 }
@@ -303,6 +429,10 @@ export default {
 		font-family: 'Noto Sans';
 		font-weight: 300;
 		color:#444;
+	}
+
+	h1.main-title{
+		font-family: 'Cormorant', sans-serif;
 	}
 
 h4{
@@ -479,11 +609,12 @@ ul.items{
 
  	.carousel-slot{
  		width: 100%;
- 		position: sticky;
+ 		/* position: sticky; */
  		top: 0;
- 		z-index: 5;
+ 		/* z-index: 5; */
  		background-color: rgb(244,244,241);
  		padding: 0.5rem 0;
+		margin-bottom: 1rem;
  	}
  }
 

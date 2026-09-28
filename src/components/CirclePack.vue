@@ -37,7 +37,7 @@
           />
 
           <!-- Text Labels for Leaf Nodes (only show if radius is large enough) -->
-          <g v-if="!node.children && node.r > 16" class="label-group">
+          <g v-if="!node.children && node.r > labelMinRadius" class="label-group">
             <text
               dy="-0.25em"
               class="label-genus"
@@ -89,7 +89,8 @@ export default {
     return {
       width: 480,
       height: 480,
-      padding: 3
+      padding: 3,
+      labelMinRadius: 15
     };
   },
   computed: {

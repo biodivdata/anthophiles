@@ -1,8 +1,6 @@
 :root{
 	--color-bee: #a65f1d;
-	/* --color-bee: #a16b37; */
 	--color-plant: #778e4e;
-	/* --color-plant: #879D5C; */
 }
 
 body{
@@ -15,12 +13,17 @@ a, a:visited, a:active{
 	color: var(--color-bee);
 }
 
+h1.main-title{
+	font-family: 'Cormorant', sans-serif;
+	font-weight: 600;
+	font-style: italic;
+	text-align: center;
+	letter-spacing: -0.01em;
+	font-size: 5rem;
+}
+
 @media (max-width: 768px){
 
-	html{
-		font-size:14px;
-	}
-	
 	body{
 		margin:0;
 	}
