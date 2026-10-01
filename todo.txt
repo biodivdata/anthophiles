@@ -1,20 +1,15 @@
 TODO
 
-- responsive layout
-	- mobile: drop detail columns, move focused obs between the bubble facets
-
 - circle pack interfaces
 	- colour for bubbles: native / non-native / mixed
-	- resolve co-occurrence / focus styling
+
+- fix data pipeline - redundant plant detection field / structure
 
 - plain language documentation / about
 
 - code repo with technical docs
 
-- title? 
-
-- catch duplicate obs from different platforms?
-- fix identifiedBy field - should be "collector" (check ALA data)
+- ?catch duplicate obs from different platforms?
 
 
 

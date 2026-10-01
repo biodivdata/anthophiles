@@ -121,6 +121,48 @@
 
 </div>
 
+<section class="about">
+  <h3>What is this?</h3>
+
+  <p>The occurrence data collected on big citizen science platforms and aggregators documents the presence of an organism in space and time, often using an image. But these images might also record other information. For example, many observations of bees also show the plants the bees are resting on, feeding on or pollinating; these bee-plant connections are important, but they are rarely recorded in structured data.</p> 
+  
+  <p><em>Anthophiles</em> experiments with automated classification to identify plants in thousands of bee observations from south-eastern Austalia. Machine learning techniques are increasingly used to help identify plants and animals, accelerating the collection of occurrence data. This experiment suggests it might also help build a more joined-up view of the living world, when used with care.   
+  </p>
+    
+  <h3>What does the data show?</h3>
+   
+  <p>This data documents 3241 bee-plant observations, involving 36 bee genera and 350 plant genera. The connections show some clear patterns. Honeybees (<FilterChip facet="bee" value="Apis" inline @select="setFilter('bee','Apis')"></FilterChip><em>mellifera</em>) forage widely, observed with over 200 plant genera; some native bees like <em>Hylaeus</em> are more selective, and prefer largely native plants. <em>Lasioglossum</em> (sweat bees) frequent native flowers like <em>Wahlenbergia</em> (bluebells) or <em>Xerochrysum</em> (paper daisies) as well as introduced plants like cats ear (<em>Hypochaeris</em>). <em>Amegilla</em>, the native "digger" and blue-banded bees, are often observed on garden plants like rosemary and sage (<em>Salvia</em>), <em>Solanum</em> (which includes tomatoes and eggplant), and lavender (<em>Lavandula</em>).
+  </p>
+
+  <p>These patterns are indicative, not definitive; many of these observations come from citizen science platforms, and they reflect well-known patterns in such data. Many observations come from urban and residential areas, because that's where the observers are. In the sciences these patterns are framed as bias; they could also be framed as documenting connections between people, non-human species and place. In this data the flowers and plants of home gardens are ubiquitous. The garden emerges as a key meeting place for human and non-human anthophiles.</p>  
+
+    <h4>Tech docs</h4>
+    <p> but the main focus here is on the classification process. Here are the key steps:</p>
+
+  <ol>
+    <li><strong>Source data:</strong> Atlas of Living Australia bee observations (Superfamily <em>Apoidea</em>) in the IBRA <a href="https://www.environment.nsw.gov.au/topics/animals-and-plants/biodiversity/bioregions/bioregions-of-nsw/south-eastern-highlands" target="_blank">South-Eastern Highlands</a> bioregion. Why this region? It's where I live, and it gives a usable 25,000 or so records. This source data is available <a href="https://doi.org/10.26197/ala.6f6eb117-96d3-4f33-b2bb-1990e6454104">here</a>.   
+    </li>
+
+    <li><strong>Download images:</strong> around 16,000 of these records include images.</li>
+
+    <li><strong>Filter for plants:</strong> not all of these images include visually recognisable plants. A custom linear classifier filters out non-plant images, leaving around 5000 records.</li>
+
+    <li><strong>Blur the bees:</strong> a second automated process tries to identify the bee in the image, blurring this area to prevent interference with the plant identification. </li>
+
+    <li><strong>Identify plants:</strong> finally, the blurred image is passed to <a href="https://imageomics.github.io/bioclip-2/" target="_blank">BioCLIP 2</a>, a specialised vision-language model that runs locally. BioCLIP returns the plant genus and a proximity score</li>
+
+    <li><strong>Filter by score:</strong> the lowest-scoring IDs tend to be inaccurate. The interface above shows the 3200 observations where the plant ID scores over 0.4. The confidence score is shown on each plant observation card. </li>
+
+  </ol>
+    
+    
+
+  
+
+
+
+</section>
+
 </template>
 
 <script>

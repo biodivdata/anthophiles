@@ -13,13 +13,59 @@ a, a:visited, a:active{
 	color: var(--color-bee);
 }
 
-h1.main-title{
+h1.main-title, h2.sub-title{
 	font-family: 'Cormorant', sans-serif;
+}
+
+h1.main-title{
 	font-weight: 600;
 	font-style: italic;
 	text-align: center;
 	letter-spacing: -0.01em;
 	font-size: 5rem;
+	margin-bottom: 0;
+	line-height: 0.65em;
+
+}
+
+h2.sub-title{
+	text-align: center;
+    margin: 0;
+    font-weight: 300;
+	position: relative;
+}
+
+h2.sub-title span{
+	position:relative;
+}
+
+
+h2.sub-title span.left{
+	left:-2.1em;
+}
+
+h2.sub-title span.right{
+	left:-0.9em;
+}
+
+header{
+	margin:0 auto 3rem;
+}
+
+.intro, .about{
+	font-family: 'Cormorant', serif;
+	margin:2rem auto;
+	max-width:760px;
+	padding:1rem;
+	font-size: 20px;
+}
+
+.about p{
+	font-family: 'Cormorant', serif;
+}
+
+.about li{
+	margin:0.5em 0;
 }
 
 @media (max-width: 768px){

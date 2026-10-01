@@ -303,7 +303,8 @@ export default {
 }
 
 .bubble-node.root-node .bubble-circle {
-  stroke:none;
+  stroke:rgba(0,0,0,0.08);
+  stroke-width: 0.5px;
 }
 
 /* Focused active node style */
