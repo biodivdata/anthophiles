@@ -8,9 +8,7 @@
 
 <template>
 
-<div class="page">
-	<h1 class="main-title">Anthophiles</h1>
-
+<div class="page" id="interface">
 
 	<div class="facets">
 		<CirclePack class="pack-bee" :list-data="beeGenera" facet="bee" facet-title="Bees" :filter-state="filter" @set-filter="setFilter"></CirclePack>
@@ -121,20 +119,51 @@
 
 </div>
 
-<section class="about">
+<section class="about" @click="onAboutClick">
   <h3>What is this?</h3>
 
   <p>The occurrence data collected on big citizen science platforms and aggregators documents the presence of an organism in space and time, often using an image. But these images might also record other information. For example, many observations of bees also show the plants the bees are resting on, feeding on or pollinating; these bee-plant connections are important, but they are rarely recorded in structured data.</p> 
   
-  <p><em>Anthophiles</em> experiments with automated classification to identify plants in thousands of bee observations from south-eastern Austalia. Machine learning techniques are increasingly used to help identify plants and animals, accelerating the collection of occurrence data. This experiment suggests it might also help build a more joined-up view of the living world, when used with care.   
+  <p><em>Anthophiles</em> experiments with automated classification to identify plants in thousands of bee observations from south-eastern Austalia. Machine learning techniques are increasingly used to help identify plants and animals, accelerating the collection of occurrence data. This experiment suggests ML might also help build a more joined-up view of the living world, when used carefully.   
   </p>
     
   <h3>What does the data show?</h3>
    
-  <p>This data documents 3241 bee-plant observations, involving 36 bee genera and 350 plant genera. The connections show some clear patterns. Honeybees (<FilterChip facet="bee" value="Apis" inline @select="setFilter('bee','Apis')"></FilterChip><em>mellifera</em>) forage widely, observed with over 200 plant genera; some native bees like <em>Hylaeus</em> are more selective, and prefer largely native plants. <em>Lasioglossum</em> (sweat bees) frequent native flowers like <em>Wahlenbergia</em> (bluebells) or <em>Xerochrysum</em> (paper daisies) as well as introduced plants like cats ear (<em>Hypochaeris</em>). <em>Amegilla</em>, the native "digger" and blue-banded bees, are often observed on garden plants like rosemary and sage (<em>Salvia</em>), <em>Solanum</em> (which includes tomatoes and eggplant), and lavender (<em>Lavandula</em>).
+  <p>This data documents 3241 bee-plant observations, involving 36 bee genera and 350 plant genera. The connections show some clear patterns. Honeybees (<em><a href="?bee=Apis" class="deep-link bee">Apis</a> mellifera</em>) forage widely, observed with over 200 plant genera; some native bees like <em><a href="?bee=Hylaeus" class="deep-link bee">Hylaeus</a></em> are more selective, and prefer largely native plants. <em><a href="?bee=Lasioglossum" class="deep-link bee">Lasioglossum</a></em> (sweat bees) frequent native flowers like <em><a href="?plant=Wahlenbergia" class="deep-link plant">Wahlenbergia</a></em> (bluebells) or <em><a href="?plant=Xerochrysum" class="deep-link plant">Xerochrysum</a></em> (paper daisies) as well as introduced plants like cats ear (<em><a href="?plant=Hypochaeris" class="deep-link plant">Hypochaeris</a></em>). <em><a href="?bee=Amegilla" class="deep-link bee">Amegilla</a></em>, the native "digger" and blue-banded bees, are often observed on garden plants like <em><a href="?plant=Salvia" class="deep-link plant">Salvia</a></em> (rosemary and sage), <em><a href="?plant=Solanum" class="deep-link plant">Solanum</a></em> (which includes tomatoes and eggplant), and lavender (<em><a href="?plant=Lavandula" class="deep-link plant">Lavandula</a></em>).
   </p>
 
-  <p>These patterns are indicative, not definitive; many of these observations come from citizen science platforms, and they reflect well-known patterns in such data. Many observations come from urban and residential areas, because that's where the observers are. In the sciences these patterns are framed as bias; they could also be framed as documenting connections between people, non-human species and place. In this data the flowers and plants of home gardens are ubiquitous. The garden emerges as a key meeting place for human and non-human anthophiles.</p>  
+  <p>These patterns are indicative, not definitive; many of these observations come from citizen science platforms, and they reflect well-known patterns in such data. Many observations come from urban and residential areas, because that's where the observers are. In the sciences these patterns are often framed as bias; they could also be framed as documenting connections between people, non-human species and place. In this data the flowers and plants of home gardens are ubiquitous. The garden emerges as a key meeting place for human and non-human anthophiles.</p>  
+
+  <h3>Machine Learning for More-Than-Human Data</h3>
+
+  <p>The plants here are identified using <a href="https://imageomics.github.io/bioclip-2/" target="_blank">BioCLIP 2</a>, a specialised machine-learning model. While the model is highly capable, this experiment also revealed some of its quirks. </p>
+
+  <p>While we can filter BioCLIP's classifications to focus on plants, BioCLIP can't "unsee" the  bee that's also in the image. This visual information interferes with the plant classification. Redacting the bee by blurring it out helps with this, improving the accuracy of the identification as shown below. To process all 13,000 images in the source data a second vision model, <a href="https://github.com/agentmorris/MegaDetector" target="_blank">Megadetector</a>, is used to identify the bee within the frame and blur that area, before passing it to BioCLIP.</p>
+
+  <figure class="about-figure">
+	<img src="/assets/img/Exoneura-Rubus-orig.jpg">
+	<figcaption>Unblurred: plant ID <em>Daviesia</em> (0.1)</figcaption>
+  </figure>
+
+    <figure class="about-figure">
+	<img src="/assets/img/Exoneura-Rubus-blurred.jpg">
+	<figcaption>Blurred: plant ID <em>Rubus</em> (0.9)</figcaption>
+  </figure>
+
+<p>Some of the 16,000 source images don't show identifiable plants at all; they show bees on the ground, on human hands, on windowsills, and so on. When asked to identify a plant in these cases BioCLIP often gives strange results. Images with hands like the example below are often identified as <em>Stelis</em> - a genus of tiny orchids. This is likely because <a href="https://www.inaturalist.org/observations?taxon_id=141523" target="_blank"></a>photographs</a> of <em>Stelis</em> orchids often include the photographer's hand; but there's also a northern-hemisphere bee genus called <em>Stelis.</em> BioCLIP is a text-image model — trained solely to compare and contrast text-image pairs. In this case similarities in both the text (name) and the image fools the model completely. Many other plantless images are classified as <em>Tetradium</em> - a genus of trees found in China and Korea. <em>Tetradium danielli</em> is also known as the "bee bee tree". These errors show something of how models like this work, through webs of similarity and difference. These are mostly very effective, and occasionally completely wrong.</p>  
+
+  <figure class="about-figure">
+	<img src="/assets/img/stelis-falseID-example.jpg">
+	<figcaption>Plant ID <em>Stelis</em> (0.7)</figcaption>
+  </figure>
+
+    <figure class="about-figure">
+	<img src="/assets/img/tetradium-falseID-example.jpg">
+	<figcaption>Plant ID <em>Tetradium</em> (0.5)</figcaption>
+  </figure>
+
+
+
 
     <h4>Tech docs</h4>
     <p> but the main focus here is on the classification process. Here are the key steps:</p>
@@ -172,7 +201,7 @@
 	  import FilterChip from './components/FilterChip.vue'
 
 	  import CarouselPagination from './components/CarouselPagination.vue'
-	  import { parseURLState, pushURLState, debouncedReplaceURLState } from './urlState.js'
+	  import { parseURLState, pushURLState, debouncedReplaceURLState, normalizeGenus } from './urlState.js'
 
 export default {
 
@@ -460,6 +489,42 @@ export default {
 
   	onPopState(){
   		this.applyStateFromURL();
+  	},
+
+  	/**
+  	 * Intercept clicks on inline "?bee=...&plant=..." links within the
+  	 * .about prose so they update the interface in place (SPA-style)
+  	 * instead of forcing a full page reload. External links (ALA,
+  	 * BioCLIP, doi.org, etc.) are left alone.
+  	 *
+  	 * The link's params represent the *complete* desired filter state,
+  	 * not a patch - a bee-only link clears any existing plant filter,
+  	 * and vice versa, so e.g. "?bee=Apis" always means "show Apis alone".
+  	 */
+  	onAboutClick(e){
+  		const link = e.target.closest('a');
+  		if (!link) return;
+
+  		const href = link.getAttribute('href') || '';
+  		if (!href.startsWith('?')) return;
+
+  		e.preventDefault();
+
+  		const params = new URLSearchParams(href.slice(1));
+  		const bee = normalizeGenus(params.get('bee') || '');
+  		const plant = normalizeGenus(params.get('plant') || '');
+
+  		this.filter.bee = (bee && this.beeGenera.some(g => g.genus === bee)) ? bee : "";
+  		this.filter.plant = (plant && this.plantGenera.some(g => g.genus === plant)) ? plant : "";
+
+  		this.resetFocusToFirstViewItem();
+  		this.syncURLState(true);
+  		this.scrollToInterface();
+  	},
+
+  	scrollToInterface(){
+  		const el = document.getElementById('interface');
+  		if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   	}
   }
 }
@@ -471,6 +536,24 @@ export default {
 		font-family: 'Noto Sans';
 		font-weight: 300;
 		color:#444;
+	}
+
+	/* Inline links within .about that update the interface's filter
+	   state (bee/plant genus deep-links), intercepted via onAboutClick.
+	   Styled distinctly from plain external reference links. */
+	.about :deep(a.deep-link){
+		color: inherit;
+		text-decoration: underline dashed;
+		text-underline-offset: 2px;
+		cursor: pointer;
+	}
+
+	.about :deep(a.deep-link.bee, a.deep-link.bee:hover){
+		color: var(--color-bee);
+	}
+
+	.about :deep(a.deep-link.plant, a.deep-link.plant:hover){
+		color: var(--color-plant);
 	}
 
 	h1.main-title{

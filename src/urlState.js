@@ -15,7 +15,7 @@ const PARAM_OBS = 'obs';
  * values (e.g. ?bee=lasioglossum) still match the capitalized genus values
  * used internally (e.g. "Lasioglossum").
  */
-function normalizeGenus(value) {
+export function normalizeGenus(value) {
 	if (!value) return '';
 	const trimmed = String(value).trim();
 	if (!trimmed) return '';
