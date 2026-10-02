@@ -138,34 +138,7 @@ export default {
       const size = Math.max(9, Math.min(18, radius * scale));
       return `${size}px`;
     },
-    getBubbleColor(node) {
-      if (node.children) {
-        // return '#ffffff';
-        return 'none';
-      }
-      // const isFocused = this.filterState[this.facet] === node.data.genus;
-      // if (isFocused) {
-      //   if (this.facet === 'plant') return '#929281';
-      // }
 
-      // Generate soft, harmonized colors based on facet type
-      // Plants: Sage/Forest greens; Bees: Ochre/Warm ambers
-      const hash = this.getHashCode(node.data.genus || '');
-      if (this.facet === 'plant') {
-        const hue = 80 + (hash % 60); // Sage to green
-        return `hsl(${hue}, 30%, 75%)`;
-      } else {
-        const hue = 35 + (hash % 25); // Ochre to warm amber
-        return `hsl(${hue}, 45%, 72%)`;
-      }
-    },
-    getHashCode(str) {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
-      }
-      return Math.abs(hash);
-    },
     getCoocInfo(node) {
       if (node.children || !node.data.original) return null;
       
@@ -202,20 +175,7 @@ export default {
       const cooc = this.getCoocInfo(node);
       return cooc ? cooc.count : 0;
     },
-    getCoocStrokeColor(node) {
-      if (node.children) {
-        return 'none';
-      }
-      // Return co-occurrence border color (more saturated than bubble background)
-      const hash = this.getHashCode(node.data.genus || '');
-      if (this.facet === 'plant') {
-        const hue = 80 + (hash % 60);
-        return `hsl(${hue}, 40%, 42%)`;
-      } else {
-        const hue = 35 + (hash % 25);
-        return `hsl(${hue}, 50%, 45%)`;
-      }
-    },
+   
     getCoocStrokeWidth(node) {
       if (node.children) {
         return 0;
@@ -243,14 +203,10 @@ export default {
 }
 
 .svg-container {
-  /* Scales fluidly with the viewport while the two-column layout is in
-     effect (roughly 768px-1200px), then continues to grow above 1200px
-     up to a comfortable maximum of ~540px. Below 768px the single-column
-     media query takes over and sizes this relative to the full width. */
+  /* Scales with the viewport while in two-column layout */
   width: clamp(260px, 47vw, 600px);
   aspect-ratio: 1 / 1;
   height: auto;
-  /* background-color: rgba(234, 234, 224, 0.5); */
   display: inline-block;
   overflow: hidden;
   border-radius: 4px;

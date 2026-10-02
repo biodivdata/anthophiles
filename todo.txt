@@ -1,15 +1,7 @@
 TODO
 
-- circle pack interfaces
-	- colour for bubbles: native / non-native / mixed
-
 - fix data pipeline - redundant plant detection field / structure
-
-- plain language documentation / about
-
 - code repo with technical docs
-
-- ?catch duplicate obs from different platforms?
 
 
 

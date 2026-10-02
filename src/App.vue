@@ -127,13 +127,14 @@
   <p><em>Anthophiles</em> experiments with automated classification to identify plants in thousands of bee observations from south-eastern Austalia. This experiment suggests ML might help build a more joined-up view of the living world; it also suggests reasons for caution, as automation plays an increasing role in citizen science and biodiversity data systems.</p>
     
   <h3>What does the data show?</h3>
+  <h3>Patterns of connection</h3>
    
   <p>This data documents 3241 bee-plant observations, involving 36 bee genera and 350 plant genera. The connections show some clear patterns. Honeybees (<em><a href="?bee=Apis" class="deep-link bee">Apis</a> mellifera</em>) forage widely, observed with over 200 plant genera; some native bees like <em><a href="?bee=Hylaeus" class="deep-link bee">Hylaeus</a></em> are more selective, and prefer largely native plants. <em><a href="?bee=Lasioglossum" class="deep-link bee">Lasioglossum</a></em> (sweat bees) frequent native flowers like <em><a href="?plant=Wahlenbergia" class="deep-link plant">Wahlenbergia</a></em> (bluebells) or <em><a href="?plant=Xerochrysum" class="deep-link plant">Xerochrysum</a></em> (paper daisies) as well as introduced plants like cats ear (<em><a href="?plant=Hypochaeris" class="deep-link plant">Hypochaeris</a></em>). <em><a href="?bee=Amegilla" class="deep-link bee">Amegilla</a></em>, the native "digger" and blue-banded bees, are often observed on garden plants like <em><a href="?plant=Salvia" class="deep-link plant">Salvia</a></em> (rosemary and sage), <em><a href="?plant=Solanum" class="deep-link plant">Solanum</a></em> (which includes tomatoes and eggplant), and lavender (<em><a href="?plant=Lavandula" class="deep-link plant">Lavandula</a></em>).
   </p>
 
   <p>These patterns are indicative, not definitive; many of these observations come from citizen science platforms, and they reflect well-known patterns in such data. Many observations come from urban and residential areas, because that's where the observers are. In the sciences these patterns are often framed as bias; they could also be framed as documenting connections between people, non-human species and place. In this data the flowers and plants of home gardens are ubiquitous. The garden emerges as a key meeting place for human and non-human anthophiles.</p>  
 
-  <h3>Machine Learning for More-Than-Human Data</h3>
+  <h3>Machine learning: errors, patches, cascades</h3>
 
   <p>The plants here are identified using <a href="https://imageomics.github.io/bioclip-2/" target="_blank">BioCLIP 2</a>, a specialised machine-learning model. While the model is highly capable, this experiment also revealed some of its quirks. </p>
 
@@ -165,26 +166,13 @@
 	</figure>
   </div>
 
-    <h4>Tech docs</h4>
+  <p>A third layer of automation catches these errors: a classifier, manually trained on a subset of the data, filters out those images without identifiable plants. In each case here a problem in one automated process is fixed, or patched, with another form of automation. There's a "cascading" quality to this workflow, similar to what Mark Andrejevic describes in <em><a href="https://research.monash.edu/en/publications/automated-media/" target="_blank">Automated Media</a></em>. Automation enables data operations at scale, but maintaining integrity and scale requires further layers of automation, which introduce new contingencies. Framed another way, and as <a href="https://arxiv.org/abs/2602.20946" target="_blank">Catalini et al</a> argue, automation shifts the cost of this kind of work from execution to verification.</p>
 
-
-  <ol>
-    <li><strong>Source data:</strong> Atlas of Living Australia bee observations (Superfamily <em>Apoidea</em>) in the IBRA <a href="https://www.environment.nsw.gov.au/topics/animals-and-plants/biodiversity/bioregions/bioregions-of-nsw/south-eastern-highlands" target="_blank">South-Eastern Highlands</a> bioregion. Why this region? It's where I live, and it gives a usable 25,000 or so records. This source data is available <a href="https://doi.org/10.26197/ala.6f6eb117-96d3-4f33-b2bb-1990e6454104">here</a>.   
-    </li>
-
-    <li><strong>Download images:</strong> around 16,000 of these records include images.</li>
-
-    <li><strong>Filter for plants:</strong> not all of these images include visually recognisable plants. A custom linear classifier filters out non-plant images, leaving around 5000 records.</li>
-
-    <li><strong>Blur the bees:</strong> a second automated process tries to identify the bee in the image, blurring this area to prevent interference with the plant identification. </li>
-
-    <li><strong>Identify plants:</strong> finally, the blurred image is passed to <a href="https://imageomics.github.io/bioclip-2/" target="_blank">BioCLIP 2</a>, a specialised vision-language model that runs locally. BioCLIP returns the plant genus and a proximity score</li>
-
-    <li><strong>Filter by score:</strong> the lowest-scoring IDs tend to be inaccurate. The interface above shows the 3200 observations where the plant ID scores over 0.4. The confidence score is shown on each plant observation card. </li>
-
-  </ol>
+ <h3>Data and code</h3>   
     
-    
+ <p>Annotated occurrence data is available here.</p>
+
+ <p>For source code and more detailed documentation on the classification and annotation workflow, see the <a href="">GitHub repository</a>.</p>
 
   
 
