@@ -66,6 +66,7 @@ header{
 .about p, .intro p{
 	font-family: 'EB Garamond', serif;
 	font-size: 18px;
+	line-height: 1.15em;
 }
 
 .about h3{
@@ -111,5 +112,7 @@ header{
 	header{
 		font-size:0.8rem;
 	}
+
+	
 }
 

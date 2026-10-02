@@ -1,7 +1,7 @@
 <template>
   <div class="circle-pack-wrap">
     <div class="svg-container">
-      <svg :width="width" :height="height" :viewBox="`0 0 ${width} ${height}`" class="bubble-chart">
+      <svg :viewBox="`0 0 ${width} ${height}`" class="bubble-chart">
         <!-- Render each bubble group -->
         <g
           v-for="node in packedNodes"
@@ -87,8 +87,8 @@ export default {
   },
   data() {
     return {
-      width: 480,
-      height: 480,
+      width: 520,
+      height: 520,
       padding: 3,
       labelMinRadius: 15
     };
@@ -239,8 +239,13 @@ export default {
 }
 
 .svg-container {
-  width: 480px;
-  height: 480px;
+  /* Scales fluidly with the viewport while the two-column layout is in
+     effect (roughly 768px-1200px), then continues to grow above 1200px
+     up to a comfortable maximum of ~540px. Below 768px the single-column
+     media query takes over and sizes this relative to the full width. */
+  width: clamp(260px, 48vw, 540px);
+  aspect-ratio: 1 / 1;
+  height: auto;
   /* background-color: rgba(234, 234, 224, 0.5); */
   display: inline-block;
   overflow: hidden;
@@ -249,6 +254,8 @@ export default {
 
 .bubble-chart {
   display: block;
+  width: 100%;
+  height: 100%;
   user-select: none;
 }
 
@@ -259,9 +266,8 @@ export default {
   }
 
   .svg-container{
-    width: 100%;
+    width: 90vw;
     height: auto;
-    max-width: 480px;
     margin: 0 auto;
   }
 
