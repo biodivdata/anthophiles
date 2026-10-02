@@ -48,11 +48,11 @@ export default {
 	.carousel-pagination{
 		display: inline-flex;
 		align-items: center;
-		gap: 0.6rem;
+		gap: 0.3rem;
 		background-color: #939393;
 		color: #ffffff;
 		border-radius: 999px;
-		padding: 0.3rem 0.5rem;
+		padding: 0.3rem 0.3rem;
 		line-height: 1;
 	}
 

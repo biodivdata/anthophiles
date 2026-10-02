@@ -135,8 +135,7 @@
 	}
 
 	p{
-		/* font-family: 'Fira Mono', monospace; */
-		font-weight:300;
+		font-weight:400;
 		font-size:75%;
 		margin: 0.1em 0 0;
 		text-align: center;

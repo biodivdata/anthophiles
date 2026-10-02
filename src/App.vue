@@ -124,8 +124,7 @@
 
   <p>The occurrence data collected on big citizen science platforms and aggregators documents the presence of an organism in space and time, often using an image. But these images might also record other information. For example, many observations of bees also show the plants the bees are resting on, feeding on or pollinating; these bee-plant connections are important, but they are rarely recorded in structured data.</p> 
   
-  <p><em>Anthophiles</em> experiments with automated classification to identify plants in thousands of bee observations from south-eastern Austalia. Machine learning techniques are increasingly used to help identify plants and animals, accelerating the collection of occurrence data. This experiment suggests ML might also help build a more joined-up view of the living world, when used carefully.   
-  </p>
+  <p><em>Anthophiles</em> experiments with automated classification to identify plants in thousands of bee observations from south-eastern Austalia. This experiment suggests ML might help build a more joined-up view of the living world; it also suggests reasons for caution, as automation plays an increasing role in citizen science and biodiversity data systems.</p>
     
   <h3>What does the data show?</h3>
    
@@ -535,7 +534,7 @@ export default {
 
 	p{
 		font-family: 'Noto Sans';
-		font-weight: 300;
+		font-weight: 400;
 		color:#444;
 	}
 
@@ -583,7 +582,7 @@ ul.items{
  	background-color: #eee;
  }
 
- .item{
+ /* .item{
  	list-style: none;
  	display: inline-block;
  	width:240px;
@@ -607,7 +606,7 @@ ul.items{
  	object-fit: cover;
  	display: block;
  	margin:0 auto;
- }
+ } */
 
  .beeFilter.active{
  	background-color: lightcoral;

@@ -19,22 +19,22 @@ h1.main-title, h2.sub-title{
 
 h1.main-title{
 	font-weight: 500;
-	font-style: italic;
-	text-align: center;
-	letter-spacing: -0.01em;
-	font-size: 5rem;
-	margin-bottom: 0;
-	line-height: 0.75em;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    font-size: 5em;
+    margin-bottom: 0;
+    line-height: 0.78em;
+    text-align: end;
 
 }
 
 h2.sub-title{
-	text-align: center;
+	text-align: right;
     margin: 0;
     font-weight: 300;
 	position: relative;
 	font-family: 'Noto Sans',sans-serif;
-	font-size:1.25rem;
+	font-size:1.25em;
 }
 
 h2.sub-title span{
@@ -43,20 +43,21 @@ h2.sub-title span{
 
 
 h2.sub-title span.left{
-	left:-2.7em;
-}
-
-h2.sub-title span.right{
-	left:-0.9em;
+	left:-1.9em;
 }
 
 header{
-	margin:0 auto 2rem;
+	margin: 0 auto;
+    display: block;
+    position: relative;
+    width: 27em;
+    font-size: 1.0rem;
+
 }
 
 .intro, .about{
 	font-family: 'EB Garamond', serif;
-	margin:2rem auto;
+	margin:0 auto 2rem;
 	max-width:760px;
 	padding:1rem;
 	
@@ -105,6 +106,10 @@ header{
 
 	body{
 		margin:0;
+	}
+
+	header{
+		font-size:0.8rem;
 	}
 }
 
