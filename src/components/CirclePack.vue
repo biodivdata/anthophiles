@@ -8,6 +8,9 @@
           :key="node.data.genus || 'root'"
           :class="{
             'facet-plant': facet == 'plant',
+            'native-plant': facet == 'plant' && node.data.native == 'native',
+            'introduced-plant': facet == 'plant' && node.data.native == 'introduced',
+            'introduced-bee': facet == 'bee' && node.data.genus == 'Apis',
             'facet-bee': facet == 'bee',
             'bubble-node': true,
             'root-node': !!node.children,
@@ -103,6 +106,7 @@ export default {
         isRoot: true,
         children: this.listData.map(d => ({
           genus: d.genus,
+          native: d.native,
           value: d.detections ? d.detections.length : 0,
           original: d
         }))
@@ -243,7 +247,7 @@ export default {
      effect (roughly 768px-1200px), then continues to grow above 1200px
      up to a comfortable maximum of ~540px. Below 768px the single-column
      media query takes over and sizes this relative to the full width. */
-  width: clamp(260px, 48vw, 540px);
+  width: clamp(260px, 47vw, 600px);
   aspect-ratio: 1 / 1;
   height: auto;
   /* background-color: rgba(234, 234, 224, 0.5); */
@@ -279,14 +283,27 @@ export default {
 
 .bubble-node {
   cursor: pointer;
+  transition: opacity 0.5s;
 }
 
 .bubble-node.facet-bee{
   fill: color-mix(in srgb, var(--color-bee) 60%, transparent);
 }
 
+.bubble-node.facet-bee.introduced-bee{
+  fill: color-mix(in srgb, var(--color-bee-introduced) 60%, transparent);
+}
+
 .bubble-node.facet-plant{
   fill: color-mix(in srgb, var(--color-plant) 60%, transparent);
+}
+
+.bubble-node.facet-plant.introduced-plant{
+  fill: color-mix(in srgb, var(--color-plant-introduced) 60%, transparent);
+}
+
+.bubble-node.facet-plant.native-plant{
+  fill: color-mix(in srgb, var(--color-plant-native) 60%, transparent);
 }
 
 .bubble-node.root-node {
@@ -299,7 +316,7 @@ export default {
 .bubble-circle {
   stroke: rgba(255, 255, 255, 0.8);
   stroke-width: 1.5px;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .bubble-node:not(.root-node):hover .bubble-circle {
@@ -317,16 +334,26 @@ export default {
 .bubble-node.facet-bee.focused .bubble-circle {
   stroke: #444;
   stroke-width: 2.5px;
-  /* fill: var(--color-bee); */
   fill: color-mix(in srgb, var(--color-bee) 80%, transparent);
 
+}
+
+.bubble-node.facet-bee.introduced-bee.focused .bubble-circle {
+  fill: color-mix(in srgb, var(--color-bee-introduced) 80%, transparent);
 }
 
 .bubble-node.facet-plant.focused .bubble-circle {
   stroke: #444;
   stroke-width: 2.5px;
-  /* fill: var(--color-plant); */
   fill: color-mix(in srgb, var(--color-plant) 80%, transparent);
+}
+
+.bubble-node.facet-plant.native-plant.focused .bubble-circle {
+  fill: color-mix(in srgb, var(--color-plant-native) 80%, transparent);
+}
+
+.bubble-node.facet-plant.introduced-plant.focused .bubble-circle {
+  fill: color-mix(in srgb, var(--color-plant-introduced) 80%, transparent);
 }
 
 
@@ -372,12 +399,26 @@ export default {
 }
 
 .facet-bee .cooc-border-circle{
-  stroke:#8a582d;
+  stroke: color-mix(in srgb, var(--color-bee) 80%, transparent)
+}
+
+.facet-bee.introduced-bee .cooc-border-circle{
+  stroke: color-mix(in srgb, var(--color-bee-introduced) 80%, transparent)
 }
 
 .facet-plant .cooc-border-circle{
-  stroke:#70944f;
+  stroke: color-mix(in srgb, var(--color-plant) 80%, transparent)
 }
+
+.facet-plant.native-plant .cooc-border-circle{
+  stroke: color-mix(in srgb, var(--color-plant-native) 80%, transparent)
+}
+
+.facet-plant.introduced-plant .cooc-border-circle{
+  stroke: color-mix(in srgb, var(--color-plant-introduced) 80%, transparent)
+}
+
+
 
 /* Faded out styling when co-occurrence doesn't exist */
 .bubble-node.no-cooc {

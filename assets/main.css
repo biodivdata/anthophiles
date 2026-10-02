@@ -1,6 +1,9 @@
 :root{
 	--color-bee: #a65f1d;
-	--color-plant: #778e4e;
+	--color-bee-introduced: #a47b14;
+	--color-plant: #76a12c;
+	--color-plant-introduced: #53a12c;
+	--color-plant-native: #558a5c;
 }
 
 body{

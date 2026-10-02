@@ -151,7 +151,7 @@
 	</figure>
   </div>
 
-<p>Some of the 16,000 source images don't show identifiable plants at all; they show bees on the ground, on human hands, on windowsills, and so on. When asked to identify a plant in these cases BioCLIP often gives strange results. Images with hands like the example below are often identified as <em>Stelis</em> - a genus of tiny orchids. This is likely because <a href="https://www.inaturalist.org/observations?taxon_id=141523" target="_blank">photographs</a> of <em>Stelis</em> orchids often include the photographer's hand; but there's also a northern-hemisphere bee genus called <em>Stelis.</em> BioCLIP is a text-image model — trained solely to compare and contrast text-image pairs. In this case similarities in both the text (name) and the image fools the model completely. Many other plantless images are classified as <em>Tetradium</em> - a genus of trees found in China and Korea. <em>Tetradium danielli</em> is also known as the "bee bee tree". These errors show something of how models like this operate, through machine-made webs of similarity and difference. These are mostly very effective, and occasionally completely wrong.</p>  
+<p>Some of the 16,000 source images don't show identifiable plants at all; they show bees on the ground, on human hands, on windowsills, and so on. When asked to identify a plant in these cases BioCLIP often gives strange results. Images with hands like the example below are often identified as <em>Stelis</em> - a genus of tiny orchids. This is likely because <a href="https://www.inaturalist.org/observations?taxon_id=141523" target="_blank">photographs</a> of <em>Stelis</em> orchids often include the photographer's hand; but there's also a northern-hemisphere bee genus called <em>Stelis.</em> BioCLIP is a text-image model — trained solely to compare and contrast text-image pairs. In this case similarities in the training data in both text (name) and image fools the model completely. Many other plantless images are classified as <em>Tetradium</em> - a genus of trees found in China and Korea. <em>Tetradium danielli</em> is also known as the "bee bee tree". These errors show something of how models like this operate, through machine-made webs of similarity and difference. These are mostly very effective, and occasionally completely wrong.</p>  
 
   <div class="figure-block">
 	 <figure class="about-figure">
@@ -216,10 +216,7 @@ export default {
     	items:sourceData,
     	filter: {bee:null, plant:null},
     	minScore:0.4,
-    	// Focus is tracked by the observation's stable occurrenceID rather
-    	// than an array index, since indices shift whenever filters/sort
-    	// change - an occurrenceID is what makes deep-linking to a specific
-    	// observation reliable.
+    	// Focus is tracked by the observation's stable occurrenceID 
     	focusedOccurrenceID: null,
     	// Set once the URL has been parsed on mount, so watchers know
     	// whether to push a new history entry or just replace in place.
@@ -292,7 +289,12 @@ export default {
   		const allGenusSet = new Set(sourceItems.map(i => i.plantDetections[0].genus));
   		const allGenus = [...allGenusSet];
   		const genusFacets = allGenus.map(g => { 
-  			return {genus:g, detections: sourceItems.filter(i => i.plantDetections[0].genus == g)}
+			let facetItems = sourceItems.filter(i => i.plantDetection.genus == g);
+			let averageNative = facetItems.map(m => m.nativeStatus).reduce((i,a) => a += i,0) / facetItems.length;
+			let nativeClass = "introduced";
+			if (averageNative > 0.2) nativeClass = "mixed"
+			if (averageNative > 0.8) nativeClass = "native"
+  			return {genus:g, native: nativeClass, detections: facetItems }
   		});
   		return genusFacets;
   	},
@@ -334,23 +336,6 @@ export default {
   		  .sort((a,b) => b.count - a.count)
 
   		let topThreePlants = plantFacets.slice(0,3);
-
-  		/*
-
-  		// this works, but "superfans" end up being plants with 1 occurrence
-			// tricky to filter this out...
-
-  		let globalProportions = plantFacets.map(f =>  {
-  			 let globalMatch = this.plantGenera.find(p => p.genus == f.plant)
-  			 let proportion = f.count / globalMatch.detections.length;
-  			 return {...f, globalProportion: proportion}
-  			})
-
-  		let superFans = globalProportions
-  			.filter(g => g.globalProportion > 0.3)
-  			.sort((a,b) => b.globalProportion - a.globalProportion).slice(0,3)
-			console.log(superFans)
-			*/
 
   		return {
   			native: native,
