@@ -140,33 +140,34 @@
 
   <p>While we can filter BioCLIP's classifications to focus on plants, BioCLIP can't "unsee" the  bee that's also in the image. This visual information interferes with the plant classification. Redacting the bee by blurring it out helps with this, improving the accuracy of the identification as shown below. To process all 13,000 images in the source data a second vision model, <a href="https://github.com/agentmorris/MegaDetector" target="_blank">Megadetector</a>, is used to identify the bee within the frame and blur that area, before passing it to BioCLIP.</p>
 
-  <figure class="about-figure">
-	<img src="/assets/img/Exoneura-Rubus-orig.jpg">
-	<figcaption>Unblurred: plant ID <em>Daviesia</em> (0.1)</figcaption>
-  </figure>
+  <div class="figure-block">
+	<figure class="about-figure">
+		<img src="/assets/img/Exoneura-Rubus-orig.jpg">
+		<figcaption>Unblurred: plant ID <em>Daviesia</em> (0.1)</figcaption>
+	</figure>
 
-    <figure class="about-figure">
-	<img src="/assets/img/Exoneura-Rubus-blurred.jpg">
-	<figcaption>Blurred: plant ID <em>Rubus</em> (0.9)</figcaption>
-  </figure>
+		<figure class="about-figure">
+		<img src="/assets/img/Exoneura-Rubus-blurred.jpg">
+		<figcaption>Blurred: plant ID <em>Rubus</em> (0.9)</figcaption>
+	</figure>
+  </div>
 
-<p>Some of the 16,000 source images don't show identifiable plants at all; they show bees on the ground, on human hands, on windowsills, and so on. When asked to identify a plant in these cases BioCLIP often gives strange results. Images with hands like the example below are often identified as <em>Stelis</em> - a genus of tiny orchids. This is likely because <a href="https://www.inaturalist.org/observations?taxon_id=141523" target="_blank">photographs</a> of <em>Stelis</em> orchids often include the photographer's hand; but there's also a northern-hemisphere bee genus called <em>Stelis.</em> BioCLIP is a text-image model — trained solely to compare and contrast text-image pairs. In this case similarities in both the text (name) and the image fools the model completely. Many other plantless images are classified as <em>Tetradium</em> - a genus of trees found in China and Korea. <em>Tetradium danielli</em> is also known as the "bee bee tree". These errors show something of how models like this work, through webs of similarity and difference. These are mostly very effective, and occasionally completely wrong.</p>  
+<p>Some of the 16,000 source images don't show identifiable plants at all; they show bees on the ground, on human hands, on windowsills, and so on. When asked to identify a plant in these cases BioCLIP often gives strange results. Images with hands like the example below are often identified as <em>Stelis</em> - a genus of tiny orchids. This is likely because <a href="https://www.inaturalist.org/observations?taxon_id=141523" target="_blank">photographs</a> of <em>Stelis</em> orchids often include the photographer's hand; but there's also a northern-hemisphere bee genus called <em>Stelis.</em> BioCLIP is a text-image model — trained solely to compare and contrast text-image pairs. In this case similarities in both the text (name) and the image fools the model completely. Many other plantless images are classified as <em>Tetradium</em> - a genus of trees found in China and Korea. <em>Tetradium danielli</em> is also known as the "bee bee tree". These errors show something of how models like this operate, through machine-made webs of similarity and difference. These are mostly very effective, and occasionally completely wrong.</p>  
 
-  <figure class="about-figure">
-	<img src="/assets/img/stelis-falseID-example.jpg">
-	<figcaption>Plant ID <em>Stelis</em> (0.7)</figcaption>
-  </figure>
+  <div class="figure-block">
+	 <figure class="about-figure">
+		<img src="/assets/img/stelis-falseID-example.jpg">
+		<figcaption>Plant ID <em>Stelis</em> (0.7)</figcaption>
+	</figure>
 
-    <figure class="about-figure">
-	<img src="/assets/img/tetradium-falseID-example.jpg">
-	<figcaption>Plant ID <em>Tetradium</em> (0.5)</figcaption>
-  </figure>
-
-
-
+	<figure class="about-figure">
+		<img src="/assets/img/tetradium-falseID-example.jpg">
+		<figcaption>Plant ID <em>Tetradium</em> (0.5)</figcaption>
+	</figure>
+  </div>
 
     <h4>Tech docs</h4>
-    <p> but the main focus here is on the classification process. Here are the key steps:</p>
+
 
   <ol>
     <li><strong>Source data:</strong> Atlas of Living Australia bee observations (Superfamily <em>Apoidea</em>) in the IBRA <a href="https://www.environment.nsw.gov.au/topics/animals-and-plants/biodiversity/bioregions/bioregions-of-nsw/south-eastern-highlands" target="_blank">South-Eastern Highlands</a> bioregion. Why this region? It's where I live, and it gives a usable 25,000 or so records. This source data is available <a href="https://doi.org/10.26197/ala.6f6eb117-96d3-4f33-b2bb-1990e6454104">here</a>.   
